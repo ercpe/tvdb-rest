@@ -96,3 +96,4 @@ ENV/
 .idea
 dev_settings.py*
 testresults.xml
+dummy.py

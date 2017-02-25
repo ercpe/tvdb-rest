@@ -1,3 +1,5 @@
 # Project dependencies for development
 pytest
 coveralls
+mock
+coverage

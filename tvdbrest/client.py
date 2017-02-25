@@ -23,8 +23,11 @@ class APIError(Exception):
 
 
 class APIObject(object):
-    def __init__(self, attrs):
+    STR_ATTR = None
+    
+    def __init__(self, attrs, tvdb):
         self._attrs = attrs
+        self._tvdb = tvdb
     
     def __getattr__(self, item):
         return self._attrs[item]
@@ -32,9 +35,23 @@ class APIObject(object):
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.id == other.id
 
+    def __str__(self):
+        return self._attrs[self.STR_ATTR] if self.STR_ATTR else super(APIObject, self).__str__()
+
 
 class Language(APIObject):
-    pass
+    STR_ATTR = 'englishName'
+
+
+class Actor(APIObject):
+    STR_ATTR = 'name'
+
+
+class Series(APIObject):
+    STR_ATTR = 'seriesName'
+    
+    def actors(self):
+        return self._tvdb.actors_by_series(self.id)
 
 
 def login_required(f):
@@ -89,9 +106,17 @@ class TVDB(object):
     
     @login_required
     def language(self, id):
-        return self._api_request('get', '/languages/%s' % id, response_class=Language)
+        return self._api_request('get', '/languages/%s' % id, response_class=Language, data_attribute=None)
     
-    def _api_request(self, method, relative_url, response_class=None, many=False, **kwargs):
+    @login_required
+    def series(self, id):
+        return self._api_request('get', '/series/%s' % id, response_class=Series)
+    
+    @login_required
+    def actors_by_series(self, id):
+        return self._api_request('get', '/series/%s/actors' % id, response_class=Actor, many=True)
+    
+    def _api_request(self, method, relative_url, response_class=None, many=False, data_attribute="data", **kwargs):
 
         url = urljoin('https://api.thetvdb.com/', relative_url)
 
@@ -110,8 +135,9 @@ class TVDB(object):
         
         logger.info("Response: %s", response)
         if response_class:
+            data = response.json()[data_attribute] if data_attribute else response.json()
             if many:
-                return [response_class(d) for d in response.json()['data']]
-            return response_class(response.json())
+                return [response_class(d, self) for d in data]
+            return response_class(data, self)
         
         return response.json()

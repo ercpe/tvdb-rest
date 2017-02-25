@@ -15,11 +15,11 @@ test: test_py2 test_py3
 
 compile:
 	@echo Compiling python code
-	python -m compileall .
+	python -m compileall tvdbrest
 
 compile_optimized:
 	@echo Compiling python code optimized
-	python -O -m compileall .
+	python -O -m compileall tvdbrest
 
 coverage:
 	coverage erase

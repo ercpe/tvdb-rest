@@ -23,7 +23,7 @@ compile_optimized:
 
 coverage:
 	coverage erase
-	PYTHONPATH="." coverage run --source='.' --branch -m py.test -qq tests/
+	PYTHONPATH="." coverage run --source='tvdbrest' --branch -m py.test -qq tests/
 	coverage xml -i
 	coverage report -m
 

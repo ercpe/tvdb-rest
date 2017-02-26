@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from functools import wraps
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode
 
 import requests
 
@@ -52,6 +52,7 @@ class TVDB(object):
         self.jwttoken = None
         
         self.useragent = "tvdb-rest %s" % VERSION
+        self._series_search_params = None
 
     def login(self):
         self.jwttoken = None
@@ -70,6 +71,13 @@ class TVDB(object):
     def logged_in(self):
         return self.jwttoken is not None
     
+    @property
+    @login_required
+    def series_search_params(self):
+        if self._series_search_params is None:
+            self._series_search_params = self._api_request('get', '/search/series/params')['data']['params']
+        return self._series_search_params
+    
     @login_required
     def languages(self):
         return self._multi_response('get', '/languages', response_class=Language)
@@ -81,6 +89,14 @@ class TVDB(object):
     @login_required
     def series(self, id):
         return self._single_response('get', '/series/%s' % id, response_class=Series)
+    
+    @login_required
+    def search(self, **kwargs):
+        if not kwargs:
+            return []
+        u = "/search/series?%s" % urlencode(kwargs)
+            
+        return self._multi_response('get', u, Series)
     
     @login_required
     def actors_by_series(self, id):

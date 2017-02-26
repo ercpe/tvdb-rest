@@ -2,6 +2,7 @@
 import mock
 import pytest
 
+from tvdbrest import VERSION
 from tvdbrest.client import TVDB, Unauthorized, APIError, NotFound
 
 
@@ -39,6 +40,7 @@ class TestLoginLogout(object):
         
         request_mock.assert_called_with('post', 'https://api.thetvdb.com/login', headers={
             'Accept-Language': 'en',
+            'User-Agent': 'tvdb-rest %s' % VERSION
         }, json={
             'username': 'myusername',
             'userkey': 'myuserkey',
@@ -88,7 +90,8 @@ class TestLoginLogout(object):
     
         request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
             'Authorization': 'Bearer test',
-             'Accept-Language': 'en',
+            'Accept-Language': 'en',
+            'User-Agent': 'tvdb-rest %s' % VERSION
         })
 
 
@@ -104,6 +107,7 @@ class TestClientBasics(object):
         request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
             'Authorization': 'Bearer test',
             'Accept-Language': 'de',
+            'User-Agent': 'tvdb-rest %s' % VERSION
         })
 
     @mock.patch('tvdbrest.client.requests.request')
@@ -115,6 +119,7 @@ class TestClientBasics(object):
     
         request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
             'Authorization': 'Bearer test',
+            'User-Agent': 'tvdb-rest %s' % VERSION
         })
 
     @mock.patch('tvdbrest.client.requests.request')

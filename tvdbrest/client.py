@@ -92,6 +92,7 @@ class TVDB(object):
         
         return self._paged_response('get', u, Episode, self.__episode_page_by_series, (id, ))
 
+    @login_required
     def __episode_page_by_series(self, id, page):
         u = '/series/%s/episodes?page=%s' % (id, page)
         return self._multi_response('get', u, Episode)
@@ -116,6 +117,7 @@ class TVDB(object):
         url = urljoin('https://api.thetvdb.com/', relative_url)
 
         headers = kwargs.pop('headers', {})
+        headers['User-Agent'] = self.useragent
         if self.jwttoken:
             headers['Authorization'] = 'Bearer %s' % self.jwttoken
         if self.accept_language:

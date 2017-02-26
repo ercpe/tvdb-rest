@@ -4,7 +4,7 @@ import datetime
 import mock
 import pytest
 
-from tvdbrest.objects import PaginatedAPIObjectList, Language, Series, Episode
+from tvdbrest.objects import PaginatedAPIObjectList, Language, Series, Episode, Update
 
 
 class TestAPIObject(object):
@@ -39,7 +39,7 @@ class TestFieldMixins(object):
             assert s.firstAired == datetime.date(1989, 12, 17)
 
     def test_last_updated(self):
-        for clazz in Series, Episode:
+        for clazz in Series, Episode, Update:
             s = clazz({}, None)
             assert s.lastUpdated is None
             

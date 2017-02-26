@@ -72,7 +72,14 @@ class ImageCount(APIObject):
 
 
 class Image(APIObject):
-    pass
+
+    @property
+    def url(self):
+        return "http://thetvdb.com/banners/%s" % self.fileName
+
+    @property
+    def thumbnail_url(self):
+        return "http://thetvdb.com/banners/%s" % self.thumbnail
 
 
 class PaginatedAPIObjectList(list):

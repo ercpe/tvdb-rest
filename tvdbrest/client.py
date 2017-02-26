@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 import requests
 
 from tvdbrest import VERSION
+from tvdbrest.objects import *
 
 logger = logging.getLogger(__name__)
 
@@ -20,38 +21,6 @@ class NotFound(Exception):
 
 class APIError(Exception):
     pass
-
-
-class APIObject(object):
-    STR_ATTR = None
-    
-    def __init__(self, attrs, tvdb):
-        self._attrs = attrs
-        self._tvdb = tvdb
-    
-    def __getattr__(self, item):
-        return self._attrs[item]
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.id == other.id
-
-    def __str__(self):
-        return self._attrs[self.STR_ATTR] if self.STR_ATTR else super(APIObject, self).__str__()
-
-
-class Language(APIObject):
-    STR_ATTR = 'englishName'
-
-
-class Actor(APIObject):
-    STR_ATTR = 'name'
-
-
-class Series(APIObject):
-    STR_ATTR = 'seriesName'
-    
-    def actors(self):
-        return self._tvdb.actors_by_series(self.id)
 
 
 def login_required(f):
@@ -103,22 +72,47 @@ class TVDB(object):
     
     @login_required
     def languages(self):
-        return self._api_request('get', '/languages', response_class=Language, many=True)
+        return self._multi_response('get', '/languages', response_class=Language)
     
     @login_required
     def language(self, id):
-        return self._api_request('get', '/languages/%s' % id, response_class=Language, data_attribute=None)
+        return self._single_response('get', '/languages/%s' % id, response_class=Language, data_attribute=None)
     
     @login_required
     def series(self, id):
-        return self._api_request('get', '/series/%s' % id, response_class=Series)
+        return self._single_response('get', '/series/%s' % id, response_class=Series)
     
     @login_required
     def actors_by_series(self, id):
-        return self._api_request('get', '/series/%s/actors' % id, response_class=Actor, many=True)
+        return self._multi_response('get', '/series/%s/actors' % id, response_class=Actor)
     
-    def _api_request(self, method, relative_url, response_class=None, many=False, data_attribute="data", **kwargs):
+    @login_required
+    def episodes_by_series(self, id):
+        u = '/series/%s/episodes' % id
+        
+        return self._paged_response('get', u, Episode, self.__episode_page_by_series, (id, ))
 
+    def __episode_page_by_series(self, id, page):
+        u = '/series/%s/episodes?page=%s' % (id, page)
+        return self._multi_response('get', u, Episode)
+    
+    def _single_response(self, method, relative_url, response_class, data_attribute="data", **kwargs):
+        response_json = self._api_request(method, relative_url, **kwargs)
+        data = response_json[data_attribute] if data_attribute else response_json
+        return response_class(data, self)
+
+    def _multi_response(self, method, relative_url, response_class, data_attribute="data", **kwargs):
+        response_json = self._api_request(method, relative_url, **kwargs)
+        data = response_json[data_attribute] if data_attribute else response_json
+        return [response_class(d, self) for d in data]
+    
+    def _paged_response(self, method, relative_url, response_class, fetch_func, fetch_args=None, page_size=100, **kwargs):
+        response_json = self._api_request(method, relative_url, **kwargs)
+        return PaginatedAPIObjectList(response_json['links'], [
+            response_class(d, self) for d in response_json['data']
+        ], fetch_func, fetch_args, page_size=page_size)
+    
+    def _api_request(self, method, relative_url, data_attribute="data", **kwargs):
         url = urljoin('https://api.thetvdb.com/', relative_url)
 
         headers = kwargs.pop('headers', {})
@@ -137,10 +131,4 @@ class TVDB(object):
             raise APIError()
         
         logger.info("Response: %s", response)
-        if response_class:
-            data = response.json()[data_attribute] if data_attribute else response.json()
-            if many:
-                return [response_class(d, self) for d in data]
-            return response_class(data, self)
-        
         return response.json()

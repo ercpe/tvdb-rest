@@ -90,3 +90,15 @@ class TestLoginLogout(object):
             'Authorization': 'Bearer test',
              'Accept-Language': 'en',
         })
+
+    @mock.patch('tvdbrest.client.requests.request')
+    def test_accept_language(self, request_mock, tvdb, empty_positive_response):
+        tvdb.accept_language = 'de'
+        request_mock.return_value = empty_positive_response
+        tvdb.jwttoken = "test"
+        tvdb.languages()
+    
+        request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
+            'Authorization': 'Bearer test',
+            'Accept-Language': 'de',
+        })

@@ -2,6 +2,8 @@
 
 `tvdb-rest` is a client implementation of the [TVDB REST API](https://api.thetvdb.com/swagger). This library *does not* support the "old" XML api!
 
+`tvdb-rest` supports Python 3.4+. Python 2.7 may work, but isn't supported.
+
 ## Usage
 
 To use the REST API, you need an TVDB API key. See http://thetvdb.com/wiki/index.php?title=Programmers_API on how to obtain one. 

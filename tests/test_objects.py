@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 import mock
 import pytest
 
@@ -20,6 +22,32 @@ class TestAPIObject(object):
         lang = Language({'id': 1, 'englishName': 'Dummy'}, None)
         assert str(lang) == "Dummy"
 
+
+class TestSeriesObject(object):
+    
+    def test_first_aired(self):
+        s = Series({}, None)
+        assert s.firstAired is None
+        
+        s = Series({
+            'firstAired': "1989-12-17"
+        }, None)
+        
+        assert s.firstAired is not None
+        assert isinstance(s.firstAired, datetime.date)
+        assert s.firstAired == datetime.date(1989, 12, 17)
+
+    def test_last_updated(self):
+        s = Series({}, None)
+        assert s.lastUpdated is None
+        
+        s = Series({
+            'lastUpdated': 1
+        }, None)
+        assert s.lastUpdated is not None
+        assert isinstance(s.lastUpdated, datetime.datetime)
+        assert s.lastUpdated == datetime.datetime(1970, 1, 1, 0, 0, 1, tzinfo=datetime.timezone.utc)
+        
 
 class TestPagination(object):
 

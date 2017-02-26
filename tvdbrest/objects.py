@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import math
 
 
@@ -35,6 +36,22 @@ class Series(APIObject):
 
     def episodes(self):
         return self._tvdb.episodes_by_series(self.id)
+
+    @property
+    def firstAired(self):  # NOSONAR
+        s = self._attrs.get('firstAired', None)
+        if not s:
+            return None
+        
+        return datetime.datetime.strptime(s, "%Y-%m-%d").date()
+
+    @property
+    def lastUpdated(self):  # NOSONAR
+        lu = self._attrs.get('lastUpdated', None)
+        if not lu:
+            return None
+        
+        return datetime.datetime.fromtimestamp(lu, tz=datetime.timezone.utc)
 
 
 class Episode(APIObject):

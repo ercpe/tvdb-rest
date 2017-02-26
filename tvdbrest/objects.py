@@ -56,8 +56,8 @@ class Series(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
     def actors(self):
         return self._tvdb.actors_by_series(self.id)
 
-    def episodes(self):
-        return self._tvdb.episodes_by_series(self.id)
+    def episodes(self, **kwargs):
+        return self._tvdb.episodes_by_series(self.id, **kwargs)
 
 
 class Episode(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):

@@ -29,3 +29,18 @@ class TestSeriesAPI(TestBase):
         with pytest.raises(NotFound):
             tvdb.series(42)
 
+    def test_episode_by_series(self, tvdb):
+        tvdb._api_request = mock.MagicMock()
+        
+        s = Series({'id': 123}, tvdb)
+        s.episodes()
+
+        tvdb._api_request.assert_called_with('get', '/series/123/episodes')
+
+    def test_episode_by_series_with_query(self, tvdb):
+        tvdb._api_request = mock.MagicMock()
+    
+        s = Series({'id': 123}, tvdb)
+        s.episodes(airedSeason=2)
+
+        tvdb._api_request.assert_called_with('get', '/series/123/episodes/query?airedSeason=2')

@@ -154,9 +154,15 @@ class TVDB(object):
     def episodes_by_series(self, series_id, *args, **kwargs):
         u = '/series/%s/episodes' % series_id
         if kwargs:
+            if not (len(kwargs) == 1 and 'page' in kwargs):
+                u += '/query'
             u += "?%s" % urlencode(kwargs)
         
         return self._api_request('get', u)
+
+    @login_required
+    def episode_query_params(self, series_id):
+        return self._api_request('get', '/series/%s/episodes/query/params' % series_id)['data']
 
     @single_response(Episode)
     @login_required

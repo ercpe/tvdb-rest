@@ -125,13 +125,13 @@ class TVDB(object):
         return self._api_request('get', '/languages')
     
     @login_required
-    def language(self, id):
-        return Language(self._api_request('get', '/languages/%s' % id), self)
+    def language(self, language_id):
+        return Language(self._api_request('get', '/languages/%s' % language_id), self)
     
     @single_response(Series)
     @login_required
-    def series(self, id):
-        return self._api_request('get', '/series/%s' % id)
+    def series(self, series_id):
+        return self._api_request('get', '/series/%s' % series_id)
     
     @multi_response(Series)
     @login_required
@@ -146,13 +146,13 @@ class TVDB(object):
     
     @multi_response(Actor)
     @login_required
-    def actors_by_series(self, id):
-        return self._api_request('get', '/series/%s/actors' % id)
+    def actors_by_series(self, series_id):
+        return self._api_request('get', '/series/%s/actors' % series_id)
     
     @paged_response(Episode)
     @login_required
-    def episodes_by_series(self, id, *args, **kwargs):
-        u = '/series/%s/episodes' % id
+    def episodes_by_series(self, series_id, *args, **kwargs):
+        u = '/series/%s/episodes' % series_id
         if kwargs:
             u += "?%s" % urlencode(kwargs)
         
@@ -160,8 +160,8 @@ class TVDB(object):
 
     @single_response(Episode)
     @login_required
-    def episode_details(self, id):
-        return self._api_request('get', '/episodes/%s' % id)
+    def episode_details(self, episode_id):
+        return self._api_request('get', '/episodes/%s' % episode_id)
     
     def _api_request(self, method, relative_url, data_attribute="data", **kwargs):
         url = urljoin('https://api.thetvdb.com/', relative_url)

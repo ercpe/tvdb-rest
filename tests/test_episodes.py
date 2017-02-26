@@ -4,7 +4,7 @@ import mock
 import pytest
 
 from tests.base import TestBase, tvdb
-from tvdbrest.client import TVDB, Unauthorized, NotFound, Episode
+from tvdbrest.client import NotFound, Episode
 
 
 class TestEpisodesAPI(TestBase):

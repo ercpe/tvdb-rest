@@ -4,7 +4,7 @@ import mock
 import pytest
 
 from tests.base import TestBase, tvdb
-from tvdbrest.client import TVDB, Unauthorized, NotFound, Series
+from tvdbrest.client import NotFound
 
 
 class TestSearchAPI(TestBase):

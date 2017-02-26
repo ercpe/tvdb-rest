@@ -199,7 +199,7 @@ class TVDB(object):
         u = '/updated/query?'
         
         def _dt_to_epoch(o):
-            return int(time.mktime(o.timetuple())) if isinstance(o, datetime.datetime) else o
+            return int(time.mktime(o.timetuple())) - time.timezone if isinstance(o, datetime.datetime) else o
         
         kwargs = {
             'fromTime': _dt_to_epoch(from_time)

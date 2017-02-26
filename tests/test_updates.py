@@ -41,7 +41,7 @@ class TestUpdateAPI(TestBase):
     def test_updated_with_datetimes(self, urlencode_mock, tvdb):
         tvdb._api_request = mock.MagicMock()
 
-        dt = datetime.datetime(2017, 2, 26, 17, 00, 00, tzinfo=datetime.timezone.utc)
+        dt = datetime.datetime(2017, 2, 26, 16, 00, 00, tzinfo=datetime.timezone.utc)
         tvdb.updates(dt)
         
         urlencode_mock.assert_called_with({
@@ -52,8 +52,8 @@ class TestUpdateAPI(TestBase):
     def test_updated_with_datetimes_to(self, urlencode_mock, tvdb):
         tvdb._api_request = mock.MagicMock()
     
-        dt1 = datetime.datetime(2017, 2, 26, 17, 00, 00, tzinfo=datetime.timezone.utc)
-        dt2 = datetime.datetime(2017, 2, 26, 18, 00, 00, tzinfo=datetime.timezone.utc)
+        dt1 = datetime.datetime(2017, 2, 26, 16, 00, 00, tzinfo=datetime.timezone.utc)
+        dt2 = datetime.datetime(2017, 2, 26, 17, 00, 00, tzinfo=datetime.timezone.utc)
         tvdb.updates(dt1, to_time=dt2)
     
         urlencode_mock.assert_called_with({

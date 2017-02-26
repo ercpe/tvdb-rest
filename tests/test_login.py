@@ -37,7 +37,9 @@ class TestLoginLogout(object):
         tvdb = TVDB("myusername", "myuserkey", "myapikey")
         tvdb.login()
         
-        request_mock.assert_called_with('post', 'https://api.thetvdb.com/login', headers={}, json={
+        request_mock.assert_called_with('post', 'https://api.thetvdb.com/login', headers={
+            'Accept-Language': 'en',
+        }, json={
             'username': 'myusername',
             'userkey': 'myuserkey',
             'apikey': 'myapikey'
@@ -85,5 +87,6 @@ class TestLoginLogout(object):
         tvdb.languages()
     
         request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
-            'Authorization': 'Bearer test'
+            'Authorization': 'Bearer test',
+             'Accept-Language': 'en',
         })

@@ -73,10 +73,11 @@ def login_required(f):
 
 class TVDB(object):
     
-    def __init__(self, username, userkey, apikey):
+    def __init__(self, username, userkey, apikey, language=None):
         self.username = username
         self.userkey = userkey
         self.apikey = apikey
+        self.accept_language = language or "en"
         
         assert self.username and self.userkey and self.apikey
         self.jwttoken = None
@@ -123,6 +124,8 @@ class TVDB(object):
         headers = kwargs.pop('headers', {})
         if self.jwttoken:
             headers['Authorization'] = 'Bearer %s' % self.jwttoken
+        if self.accept_language:
+            headers['Accept-Language'] = self.accept_language
 
         response = requests.request(method, url, headers=headers, **kwargs)
         

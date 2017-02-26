@@ -1,5 +1,7 @@
 # tvdb-rest
 
+[![Build Status](https://travis-ci.org/ercpe/tvdb-rest.svg?branch=master)](https://travis-ci.org/ercpe/tvdb-rest) [![Coverage Status](https://coveralls.io/repos/github/ercpe/tvdb-rest/badge.svg?branch=master)](https://coveralls.io/github/ercpe/tvdb-rest?branch=master)
+
 `tvdb-rest` is a client implementation of the [TVDB REST API](https://api.thetvdb.com/swagger). This library *does not* support the "old" XML api!
 
 `tvdb-rest` supports Python 3.4+. Python 2.7 may work, but isn't supported.

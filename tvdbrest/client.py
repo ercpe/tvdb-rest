@@ -113,6 +113,10 @@ class TVDB(object):
         u = '/series/%s/episodes?page=%s' % (id, page)
         return self._multi_response('get', u, Episode)
     
+    @login_required
+    def episode_details(self, id):
+        return self._single_response('get', '/episodes/%s' % id, Episode)
+    
     def _single_response(self, method, relative_url, response_class, data_attribute="data", **kwargs):
         response_json = self._api_request(method, relative_url, **kwargs)
         data = response_json[data_attribute] if data_attribute else response_json

@@ -2,7 +2,7 @@
 import mock
 import pytest
 
-from tvdbrest.client import TVDB, Unauthorized
+from tvdbrest.client import TVDB, Unauthorized, APIError, NotFound
 
 
 @pytest.fixture
@@ -91,9 +91,12 @@ class TestLoginLogout(object):
              'Accept-Language': 'en',
         })
 
+
+class TestClientBasics(object):
+
     @mock.patch('tvdbrest.client.requests.request')
-    def test_accept_language(self, request_mock, tvdb, empty_positive_response):
-        tvdb.accept_language = 'de'
+    def test_accept_language(self, request_mock, empty_positive_response):
+        tvdb = TVDB("myusername", "myuserkey", "myapikey", 'de')
         request_mock.return_value = empty_positive_response
         tvdb.jwttoken = "test"
         tvdb.languages()
@@ -102,3 +105,41 @@ class TestLoginLogout(object):
             'Authorization': 'Bearer test',
             'Accept-Language': 'de',
         })
+
+    @mock.patch('tvdbrest.client.requests.request')
+    def test_accept_language_not_set(self, request_mock, tvdb, empty_positive_response):
+        tvdb.accept_language = None
+        request_mock.return_value = empty_positive_response
+        tvdb.jwttoken = "test"
+        tvdb.languages()
+    
+        request_mock.assert_called_with('get', 'https://api.thetvdb.com/languages', headers={
+            'Authorization': 'Bearer test',
+        })
+
+    @mock.patch('tvdbrest.client.requests.request')
+    def test_raise_apierror_on_4xx(self, request_mock, tvdb):
+        m = mock.Mock()
+        m.status_code = 405
+        request_mock.return_value = m
+        
+        with pytest.raises(APIError):
+            tvdb.login()
+
+    @mock.patch('tvdbrest.client.requests.request')
+    def test_raise_apierror_on_5xx(self, request_mock, tvdb):
+        m = mock.Mock()
+        m.status_code = 500
+        request_mock.return_value = m
+    
+        with pytest.raises(APIError):
+            tvdb.login()
+
+    @mock.patch('tvdbrest.client.requests.request')
+    def test_raise_not_found_on_404(self, request_mock, tvdb):
+        m = mock.Mock()
+        m.status_code = 404
+        request_mock.return_value = m
+    
+        with pytest.raises(NotFound):
+            tvdb.login()

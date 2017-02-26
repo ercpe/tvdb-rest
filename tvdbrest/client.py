@@ -7,6 +7,8 @@ import requests
 
 from tvdbrest import VERSION
 from tvdbrest.objects import *
+import datetime
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -196,11 +198,14 @@ class TVDB(object):
     def updates(self, from_time, to_time=None):
         u = '/updated/query?'
         
+        def _dt_to_epoch(o):
+            return int(time.mktime(o.timetuple())) if isinstance(o, datetime.datetime) else o
+        
         kwargs = {
-            'fromTime': from_time
+            'fromTime': _dt_to_epoch(from_time)
         }
         if to_time:
-            kwargs['toTime'] = to_time
+            kwargs['toTime'] = _dt_to_epoch(to_time)
         
         u += urlencode(kwargs)
         return self._api_request('get', u)

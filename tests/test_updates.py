@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 
 import mock
 
@@ -35,3 +36,27 @@ class TestUpdateAPI(TestBase):
         update = updates[0]
         update.series
         get_series_mock.assert_called_with(1)
+
+    @mock.patch('tvdbrest.client.urlencode')
+    def test_updated_with_datetimes(self, urlencode_mock, tvdb):
+        tvdb._api_request = mock.MagicMock()
+
+        dt = datetime.datetime(2017, 2, 26, 17, 00, 00, tzinfo=datetime.timezone.utc)
+        tvdb.updates(dt)
+        
+        urlencode_mock.assert_called_with({
+            'fromTime': 1488124800
+        })
+
+    @mock.patch('tvdbrest.client.urlencode')
+    def test_updated_with_datetimes_to(self, urlencode_mock, tvdb):
+        tvdb._api_request = mock.MagicMock()
+    
+        dt1 = datetime.datetime(2017, 2, 26, 17, 00, 00, tzinfo=datetime.timezone.utc)
+        dt2 = datetime.datetime(2017, 2, 26, 18, 00, 00, tzinfo=datetime.timezone.utc)
+        tvdb.updates(dt1, to_time=dt2)
+    
+        urlencode_mock.assert_called_with({
+            'fromTime': 1488124800,
+            'toTime': 1488128400
+        })

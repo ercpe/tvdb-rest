@@ -101,8 +101,8 @@ class PaginatedAPIObjectList(list):
             self._pages[page_idx] = self._fetch_page(page_idx+1)
 
         # if we've already fetched the last page, we can determine for sure that the index is out of range
-        if absolute_index >= 0 and self._pages[self._last_page-1] is not None:
-            if page_item_idx >= len(self._pages[self._last_page-1]):
+        if absolute_index >= 0 and self._pages[self._last_page-1] is not None and \
+            page_item_idx >= len(self._pages[self._last_page-1]):
                 raise IndexError("list index out of range")
 
         return self._pages[page_idx][page_item_idx]

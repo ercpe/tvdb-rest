@@ -82,7 +82,7 @@ class Image(APIObject):
         return "http://thetvdb.com/banners/%s" % self.thumbnail
 
 
-class Update(APIObject):
+class Update(LastUpdatedFieldMixin, APIObject):
     
     @property
     def series(self):

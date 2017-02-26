@@ -130,8 +130,17 @@ class TVDB(object):
     
     @single_response(Series)
     @login_required
-    def series(self, series_id):
-        return self._api_request('get', '/series/%s' % series_id)
+    def series(self, series_id, keys=None):
+        u = '/series/%s' % series_id
+        if keys:
+            u += "/filter?%s" % urlencode({
+                'keys': ','.join(keys)
+            })
+        return self._api_request('get', u)
+    
+    @login_required
+    def series_key_params(self, series_id):
+        return self._api_request('get', '/series/%s/filter/params' % series_id)['data']['params']
     
     @multi_response(Series)
     @login_required

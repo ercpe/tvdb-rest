@@ -23,4 +23,7 @@ class TestBase(object):
     def api_response_404_mock(self):
         m = mock.MagicMock()
         m.status_code = 404
+        m.json = mock.MagicMock(return_value={
+            'Error': 'Not Found'
+        })
         return m

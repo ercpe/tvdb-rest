@@ -2,6 +2,7 @@
 import mock
 import pytest
 
+from tests.base import TestBase
 from tvdbrest import VERSION
 from tvdbrest.client import TVDB, Unauthorized, APIError, NotFound
 
@@ -95,7 +96,7 @@ class TestLoginLogout(object):
         })
 
 
-class TestClientBasics(object):
+class TestClientBasics(TestBase):
 
     @mock.patch('tvdbrest.client.requests.request')
     def test_accept_language(self, request_mock, empty_positive_response):
@@ -142,9 +143,9 @@ class TestClientBasics(object):
 
     @mock.patch('tvdbrest.client.requests.request')
     def test_raise_not_found_on_404(self, request_mock, tvdb):
-        m = mock.Mock()
-        m.status_code = 404
-        request_mock.return_value = m
-    
+        # m = mock.Mock()
+        # m.status_code = 404
+        request_mock.return_value = self.api_response_404_mock()
+        
         with pytest.raises(NotFound):
             tvdb.login()

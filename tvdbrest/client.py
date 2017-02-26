@@ -182,9 +182,9 @@ class TVDB(object):
         response = requests.request(method, url, headers=headers, **kwargs)
         
         if response.status_code == 401:
-            raise Unauthorized()
+            raise Unauthorized(response.json()["Error"])
         elif response.status_code == 404:
-            raise NotFound()
+            raise NotFound(response.json()["Error"])
         elif response.status_code >= 400:
             raise APIError()
         

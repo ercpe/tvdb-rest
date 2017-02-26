@@ -3,6 +3,28 @@ import datetime
 import math
 
 
+class LastUpdatedFieldMixin(object):
+
+    @property
+    def lastUpdated(self):  # NOSONAR
+        lu = self._attrs.get('lastUpdated', None)
+        if not lu:
+            return None
+        
+        return datetime.datetime.fromtimestamp(lu, tz=datetime.timezone.utc)
+
+
+class FirstAiredFieldMixin(object):
+
+    @property
+    def firstAired(self):  # NOSONAR
+        s = self._attrs.get('firstAired', None)
+        if not s:
+            return None
+        
+        return datetime.datetime.strptime(s, "%Y-%m-%d").date()
+
+
 class APIObject(object):
     STR_ATTR = None
     
@@ -28,7 +50,7 @@ class Actor(APIObject):
     STR_ATTR = 'name'
 
 
-class Series(APIObject):
+class Series(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
     STR_ATTR = 'seriesName'
     
     def actors(self):
@@ -37,24 +59,8 @@ class Series(APIObject):
     def episodes(self):
         return self._tvdb.episodes_by_series(self.id)
 
-    @property
-    def firstAired(self):  # NOSONAR
-        s = self._attrs.get('firstAired', None)
-        if not s:
-            return None
-        
-        return datetime.datetime.strptime(s, "%Y-%m-%d").date()
 
-    @property
-    def lastUpdated(self):  # NOSONAR
-        lu = self._attrs.get('lastUpdated', None)
-        if not lu:
-            return None
-        
-        return datetime.datetime.fromtimestamp(lu, tz=datetime.timezone.utc)
-
-
-class Episode(APIObject):
+class Episode(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
     STR_ATTR = 'episodeName'
 
 

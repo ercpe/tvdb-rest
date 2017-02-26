@@ -12,11 +12,23 @@ To use the REST API, you need an TVDB API key. See http://thetvdb.com/wiki/index
 	for language in api.languages():
 		print(language)
 
+	# search for series
+	search_results = api.search(name='The Simpsons')
+	for series in search_results:
+		print(series)
+
+	# fetch series by id
 	simpsons = api.series(71663)
 
-	print("Actors:")
+	# access actors of series object
 	for actor in simpsons.actors():
 		print("%s as %s" % (actor, ', '.join(actor.role.split('|'))))
+
+	# list all episodes for series (pagination handled automatically)
+	for episode in simpsons.episodes():
+		print(episode)
+
+	
 
 
 ## License

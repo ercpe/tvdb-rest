@@ -40,6 +40,47 @@ def login_required(f):
     return wrapper
 
 
+def single_response(response_class):
+    
+    def _inner(func):
+        
+        @wraps(func)
+        def wrapper(obj, *args, **kwargs):
+            result = func(obj, *args, **kwargs)
+            return response_class(result["data"], obj)
+        
+        return wrapper
+    
+    return _inner
+
+
+def multi_response(response_class):
+    def _inner(func):
+        @wraps(func)
+        def wrapper(obj, *args, **kwargs):
+            result = func(obj, *args, **kwargs)
+            return [response_class(d, obj) for d in result["data"]]
+        
+        return wrapper
+    
+    return _inner
+
+
+def paged_response(response_class, page_size=100):
+    def _inner(func):
+        @wraps(func)
+        def wrapper(obj, *args, **kwargs):
+            result = func(obj, *args, **kwargs)
+            return PaginatedAPIObjectList(result['links'],
+                                          [response_class(d, obj) for d in result['data']],
+                                          multi_response(response_class)(func), tuple([obj] + list(args)), kwargs,
+                                          page_size=page_size)
+        
+        return wrapper
+    
+    return _inner
+
+
 class TVDB(object):
     
     def __init__(self, username, userkey, apikey, language=None):
@@ -77,61 +118,50 @@ class TVDB(object):
         if self._series_search_params is None:
             self._series_search_params = self._api_request('get', '/search/series/params')['data']['params']
         return self._series_search_params
-    
+
+    @multi_response(Language)
     @login_required
     def languages(self):
-        return self._multi_response('get', '/languages', response_class=Language)
+        return self._api_request('get', '/languages')
     
     @login_required
     def language(self, id):
-        return self._single_response('get', '/languages/%s' % id, response_class=Language, data_attribute=None)
+        return Language(self._api_request('get', '/languages/%s' % id), self)
     
+    @single_response(Series)
     @login_required
     def series(self, id):
-        return self._single_response('get', '/series/%s' % id, response_class=Series)
+        return self._api_request('get', '/series/%s' % id)
     
+    @multi_response(Series)
     @login_required
     def search(self, **kwargs):
         if not kwargs:
-            return []
+            return {
+                "data": []
+            }
         u = "/search/series?%s" % urlencode(kwargs)
             
-        return self._multi_response('get', u, Series)
+        return self._api_request('get', u)
     
+    @multi_response(Actor)
     @login_required
     def actors_by_series(self, id):
-        return self._multi_response('get', '/series/%s/actors' % id, response_class=Actor)
+        return self._api_request('get', '/series/%s/actors' % id)
     
+    @paged_response(Episode)
     @login_required
-    def episodes_by_series(self, id):
+    def episodes_by_series(self, id, *args, **kwargs):
         u = '/series/%s/episodes' % id
+        if kwargs:
+            u += "?%s" % urlencode(kwargs)
         
-        return self._paged_response('get', u, Episode, self.__episode_page_by_series, (id, ))
+        return self._api_request('get', u)
 
-    @login_required
-    def __episode_page_by_series(self, id, page):
-        u = '/series/%s/episodes?page=%s' % (id, page)
-        return self._multi_response('get', u, Episode)
-    
+    @single_response(Episode)
     @login_required
     def episode_details(self, id):
-        return self._single_response('get', '/episodes/%s' % id, Episode)
-    
-    def _single_response(self, method, relative_url, response_class, data_attribute="data", **kwargs):
-        response_json = self._api_request(method, relative_url, **kwargs)
-        data = response_json[data_attribute] if data_attribute else response_json
-        return response_class(data, self)
-
-    def _multi_response(self, method, relative_url, response_class, data_attribute="data", **kwargs):
-        response_json = self._api_request(method, relative_url, **kwargs)
-        data = response_json[data_attribute] if data_attribute else response_json
-        return [response_class(d, self) for d in data]
-    
-    def _paged_response(self, method, relative_url, response_class, fetch_func, fetch_args=None, page_size=100, **kwargs):
-        response_json = self._api_request(method, relative_url, **kwargs)
-        return PaginatedAPIObjectList(response_json['links'], [
-            response_class(d, self) for d in response_json['data']
-        ], fetch_func, fetch_args, page_size=page_size)
+        return self._api_request('get', '/episodes/%s' % id)
     
     def _api_request(self, method, relative_url, data_attribute="data", **kwargs):
         url = urljoin('https://api.thetvdb.com/', relative_url)

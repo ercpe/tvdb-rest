@@ -66,7 +66,7 @@ class Episode(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
 
 class PaginatedAPIObjectList(list):
 
-    def __init__(self, links, initial_items, fetch_func, fetch_args=None, page_size=100):
+    def __init__(self, links, initial_items, fetch_func, fetch_args=None, fetch_kwargs=None, page_size=100):
         self._first_page = links['first']
         self._last_page = links['last']
 
@@ -77,6 +77,7 @@ class PaginatedAPIObjectList(list):
         self._page_size = page_size
         self._fetch_func = fetch_func
         self._fetch_args = fetch_args
+        self._fetch_kwargs = fetch_kwargs
         super(PaginatedAPIObjectList, self).__init__()
 
     @property
@@ -87,7 +88,9 @@ class PaginatedAPIObjectList(list):
         return len(self._pages[self._last_page-1])
 
     def _fetch_page(self, page_number):
-        return self._fetch_func(*tuple(list(self._fetch_args or []) + [page_number]))
+        kwargs = self._fetch_kwargs or {}
+        kwargs['page'] = page_number
+        return self._fetch_func(*self._fetch_args or (), **kwargs)
 
     def __len__(self):
         return (self._last_page-1) * self._page_size + self._last_page_item_count

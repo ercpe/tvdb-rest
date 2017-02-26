@@ -97,7 +97,7 @@ class TestPagination(object):
         with pytest.raises(IndexError):
             paol[9]
 
-        fetch_mock.assert_called_once_with(2)
+        fetch_mock.assert_called_once_with(page=2)
 
     def test_indexing(self):
         paol = PaginatedAPIObjectList({
@@ -129,7 +129,7 @@ class TestPagination(object):
             x = paol[i]
             assert x == i + 1
 
-        fetch_mock.assert_called_once_with(2)
+        fetch_mock.assert_called_once_with(page=2)
 
     def test_indexing_fetching2(self):
         def _dummy_fetch(page):

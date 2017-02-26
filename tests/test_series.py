@@ -60,6 +60,14 @@ class TestSeriesAPI(TestBase):
 
         tvdb._api_request.assert_called_with('get', '/series/123/episodes/query?airedSeason=2')
 
+    def test_actors_from_sers(self, tvdb):
+        tvdb.actors_by_series = mock.MagicMock()
+    
+        s = Series({'id': 123}, tvdb)
+        s.actors()
+    
+        tvdb.actors_by_series.assert_called_with(123)
+
     def test_get_series_keys_params(self, tvdb):
         tvdb._api_request = mock.MagicMock()
         

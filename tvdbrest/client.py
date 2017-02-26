@@ -191,6 +191,20 @@ class TVDB(object):
             u += "?%s" % urlencode(kwargs)
         return self._api_request('get', u)
     
+    @multi_response(Update)
+    @login_required
+    def updates(self, from_time, to_time=None):
+        u = '/updated/query?'
+        
+        kwargs = {
+            'fromTime': from_time
+        }
+        if to_time:
+            kwargs['toTime'] = to_time
+        
+        u += urlencode(kwargs)
+        return self._api_request('get', u)
+    
     def _api_request(self, method, relative_url, data_attribute="data", **kwargs):
         url = urljoin('https://api.thetvdb.com/', relative_url)
 

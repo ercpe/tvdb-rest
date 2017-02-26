@@ -82,6 +82,13 @@ class Image(APIObject):
         return "http://thetvdb.com/banners/%s" % self.thumbnail
 
 
+class Update(APIObject):
+    
+    @property
+    def series(self):
+        return self._tvdb.series(self.id)
+
+
 class PaginatedAPIObjectList(list):
 
     def __init__(self, links, initial_items, fetch_func, fetch_args=None, fetch_kwargs=None, page_size=100):

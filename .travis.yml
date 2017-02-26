@@ -1,9 +1,9 @@
 language: python
 sudo: False
 python:
-- 2.7
 - 3.4
 - 3.5
+- 3.6
 - pypy
 - nightly # 3.6
 
@@ -15,10 +15,3 @@ script: make travis
 
 after_success:
 - coveralls
-
-#notifications:
-#  irc:
-#    channels: "chat.freenode.net#not-your-server.de"
-#    template:
-#    - "%{repository} - %{branch} - %{author}: %{commit_subject} - %{message} - Build details : %{build_url}"
-#    use_notice: true

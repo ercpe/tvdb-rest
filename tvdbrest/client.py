@@ -178,6 +178,19 @@ class TVDB(object):
     def episode_details(self, episode_id):
         return self._api_request('get', '/episodes/%s' % episode_id)
     
+    @single_response(ImageCount)
+    @login_required
+    def image_count(self, series_id):
+        return self._api_request('get', '/series/%s/images' % series_id)
+    
+    @multi_response(Image)
+    @login_required
+    def images(self, series_id, **kwargs):
+        u = '/series/%s/images/query' % series_id
+        if kwargs:
+            u += "?%s" % urlencode(kwargs)
+        return self._api_request('get', u)
+    
     def _api_request(self, method, relative_url, data_attribute="data", **kwargs):
         url = urljoin('https://api.thetvdb.com/', relative_url)
 

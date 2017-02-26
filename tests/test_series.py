@@ -65,3 +65,33 @@ class TestSeriesAPI(TestBase):
         
         tvdb.series_key_params(123)
         tvdb._api_request.assert_called_with('get', '/series/123/filter/params')
+
+    def test_images_via_series(self, tvdb):
+        tvdb.images = mock.MagicMock()
+    
+        s = Series({'id': 123}, tvdb)
+        s.images()
+    
+        tvdb.images.assert_called_with(123)
+
+    def test_images_via_series_with_args(self, tvdb):
+        tvdb.images = mock.MagicMock()
+    
+        s = Series({'id': 123}, tvdb)
+        s.images(keyType='fanart')
+    
+        tvdb.images.assert_called_with(123, keyType='fanart')
+
+    def test_images(self, tvdb):
+        tvdb._api_request = mock.MagicMock()
+    
+        tvdb.images(123)
+    
+        tvdb._api_request.assert_called_with('get', '/series/123/images/query')
+
+    def test_images_kwargs(self, tvdb):
+        tvdb._api_request = mock.MagicMock()
+    
+        tvdb.images(123, keyType='fanart')
+    
+        tvdb._api_request.assert_called_with('get', '/series/123/images/query?keyType=fanart')

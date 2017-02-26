@@ -59,9 +59,20 @@ class Series(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
     def episodes(self, **kwargs):
         return self._tvdb.episodes_by_series(self.id, **kwargs)
 
+    def images(self, **kwargs):
+        return self._tvdb.images(self.id, **kwargs)
+
 
 class Episode(LastUpdatedFieldMixin, FirstAiredFieldMixin, APIObject):
     STR_ATTR = 'episodeName'
+
+
+class ImageCount(APIObject):
+    pass
+
+
+class Image(APIObject):
+    pass
 
 
 class PaginatedAPIObjectList(list):

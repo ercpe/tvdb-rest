@@ -27,9 +27,6 @@ coverage:
 	coverage xml -i
 	coverage report -m
 
-sonar:
-	/usr/local/bin/sonar-scanner/bin/sonar-scanner
-
 clean:
 	find -name "*.py?" -delete
 	rm -f coverage.xml
@@ -37,4 +34,9 @@ clean:
 	rm -fr htmlcov dist *.egg-info
 
 travis: compile compile_optimized test_default_python coverage
-jenkins: travis sonar
+
+install_deps:
+	pip install -r requirements.txt
+	pip install -r requirements_dev.txt
+
+jenkins: install_deps travis

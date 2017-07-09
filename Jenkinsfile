@@ -4,28 +4,6 @@ node {
 		updateGitlabCommitStatus name: 'jenkins', state: 'running'
 
 		docker.withRegistry('https://registry.docks.ercpe.de', 'docker-registry') {
-			docker.image('python:2.7').inside {
-				stage("Install dependencies") {
-					sh "make install_deps"
-				}
-
-				stage("Compile") {
-					sh "make compile compile_optimized"
-				}
-
-				stage("Run tests") {
-					sh "make test"
-				}
-
-				stage("Run coverage") {
-					sh "make coverage"
-				}
-
-				stage("Run pylint") {
-					sh "pylint -r n --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' > pylint-report.txt || true"
-				}
-			}
-
 			docker.image('python:3.4').inside {
 				stage("Install dependencies") {
 					sh "make install_deps"

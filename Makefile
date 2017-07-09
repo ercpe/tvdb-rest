@@ -23,7 +23,7 @@ clean:
 	rm -f testresults.xml
 	rm -fr htmlcov dist *.egg-info
 
-travis: compile compile_optimized test_default_python coverage
+travis: compile compile_optimized test coverage
 
 install_deps:
 	pip install -r requirements.txt

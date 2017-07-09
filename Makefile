@@ -1,17 +1,7 @@
-TARGET?=tests
+TARGET?=test
 
-test_default_python:
+test:
 	PYTHONPATH="." python -m pytest tests/ --junit-xml testresults.xml -rxsw -v
-
-test_py2:
-	@echo Executing test with python2
-	PYTHONPATH="." python2 -m pytest tests/ --junit-xml testresults.xml -rxsw -v
-
-test_py3:
-	@echo Executing test with python3
-	PYTHONPATH="." python3 -m pytest tests/ --junit-xml testresults.xml -rxsw -v
-
-test: test_py2 test_py3
 
 compile:
 	@echo Compiling python code
